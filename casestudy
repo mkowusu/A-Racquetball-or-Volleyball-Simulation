@@ -1,0 +1,265 @@
+Michael Owusu
+Anita DeWitt
+
+9/9/2014
+
+Basic Solutions: Recursion and Iteration
+
+Steps for this Lab
+
+1a.
+Game Flow 1, Recursive: Advantages:
+Looking at the data that was given in the lab, this code is the most
+concise both with and without comments and formatting while serving the
+same function as the other three approaches.
+ 
+Game Flow 1, Recursive Disadvantages:
+In terms of efficiency, this program is recursive which as we have learned
+means that the whole program (or methods) is run again until a condition is
+met. As opposed to the other three whose program and methods are  only
+run once. That is not to say that recursion is always less efficient than
+iteration, but in this case we believe it to be so.
+
+
+Game Flow 1, Iterative Advantages:
+This approach has advantage over the first method because it is iterative.  
+
+
+Game Flow 1, Iterative Disadvantages:
+This is the least concise code in terms of lines for the game method. It
+is not as readable as some of the other methods and it is the second least concise.
+
+
+Game Flow 2, Iterative, no helper methods Advantages:
+This approach has the second fewest amount of lines. It differs from
+approach one in that it is iterative instead of recursive. This change only
+required an extra line of code including and excluding formatting and commenting.
+
+Game Flow 2, Iterative, no helper methods: Disadvantages:
+While this code is one of the most concise it does not have helper methods
+like its counterpart, which may improve readability.
+
+
+Game Flow 2, Iterative with helper methods: Advantages:
+As compared with the other Game Flow 1, this approach differs in that it
+includes a helper function. We found it to be very readable and despite
+being the second longest approach, excluding the comments and formatting
+(which is why we find it so readable).
+
+Game Flow 2, Iterative with helper methods: Disadvantages:
+This approach is the least concise and involves a bit more research from
+the reader to understand the code. Once the effort is put in though, we
+think this is the easiest to work with.
+
+2a.
+These are not declared as static because they work with members
+of the class in which they are declared. To be static means that the method
+is available at Class level. Static elements pertain to the class rather
+than the object. In short, if the method works with an object it is not
+static.
+
+2b. 
+Neither of these methods can be declared as static. We know this because we
+tried to run them as static. As for an explanation, it draws on our above
+answer, a static method cannot call and work with a non-static method. 
+The method won interacts with winByTwo which is a non-static field, 
+therefore it cannot be static either. The method serve calls won so if won
+can't be static, neither can serve.
+
+3a.
+The advantages for using recursion is shown by the Game Flow 1. It is the
+most concise code. We believe this would also be the case if we used
+recursion in Game Flow 2. It would be shorter code in that loops would be
+unnecessary for repetition and we would only need to call the method we
+want repeated over and over again until a condition is met. The advantage
+of recursion is the same in both circumstances; the code would be more
+concise. The disadvantage of both circumstances, however is that it is 
+less efficient to call entire methods rather than loop. Looping takes one
+call to a method which is more efficient than several calls.
+
+4. 
+
+/* 
+ * Racquetball/Volleyball Simulation:  
+ *    Solution Alternative 1:  Store game, simulation data in object
+ *    Serve-by-Serve Recursive Approach
+ * Copyright(c) 2011 by Henry M. Walker
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * This code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * @author Henry M. Walker
+ */
+
+// The Math library is needed for its random() function
+import java.lang.Math;
+
+/**
+ * This class simulates a volleyball or racquetball game
+ * between players/teams A and B, based on the probability
+ * that A will win a volley.  1000 games are simulated,
+ * with the probability of A winning a volley being 
+ * 0.40, 0.41, ..., 0.59, 0.60 .
+ */
+public class Game1Recur {
+    public String game; // either "racquetball" or "volleyball"
+    public boolean winByTwo;
+    public int numberOfGames;
+    
+    public double augmentedProb;
+    
+    /**
+     * Constructor specifies whether racquetball or volleyball
+     * will be simulated (default racquetball) and 
+     * the number of games to be simulated
+     * Constructor also uses the racquetball/volleyball 
+     * information to determine if players of the game 
+     * must win by 2 or 1, respectively.
+     */
+    public Game1Recur (String simGame, int simNumGames)
+    {
+game = simGame;
+numberOfGames = simNumGames;
+winByTwo = simGame.equals("volleyball");
+    }
+
+    /**
+     * Format a probability (a number between 0.0 and 1.0)
+     * as a 2-character integer percentage, followed by a
+     * "%" character.
+     */
+    public static String formatPercent (double value)
+    {
+String str = "" + Math.round(value * 100.0);
+while (str.length() < 3)
+   str = " " + str;
+return str + "%";
+    }
+ 
+/**
+* Play one game of racquetball or volleyball to conclusion
+* @parms  server and receiver indicate the team "A" or "B"
+*         probWinVolley specifies the likelihood the server wins a volley
+*         serverScore, recScore contain current score of
+*             server and receiver
+* @returns winner of game: either "A" or "B"
+*/
+    public String playUntilWin (String server, String receiver,
+      double probWinVolley, 
+      int serverScore, int recScore) 
+    {
+// serve
+   
+    if(server == "A"){
+    augmentedProb = probWinVolley+ 0.1;
+    }
+    else{
+    augmentedProb =probWinVolley - 0.1;
+    }
+   
+if (Math.random() < augmentedProb)
+   { // score point
+serverScore++;
+     // if win, return winner
+if ((serverScore >= 15)
+   && ((! winByTwo)
+|| (serverScore >= recScore + 2)))
+   { return server;
+   }
+     // if not win, serve again
+{return playUntilWin (server, receiver, probWinVolley, 
+     serverScore, recScore);
+}
+
+   }
+else
+   { // other side wins; other player serves 
+return playUntilWin (receiver, server, 1.0-probWinVolley,
+    recScore, serverScore);
+   }
+    }
+
+    /**
+     * Run simulation of 1000 games for probability of "A" winning
+     *   a volley covering the range 0.40, 0.41, ..., 0.59, 0.60.
+     * For each probability of "A" winning,
+     *   simulate games with Player/Team A always serving first
+     *   print one line with the percentage of volleys won by A and B 
+     *     and percentage of games won by A and B
+     */
+    public void simulateGames ()
+    {   // print headings
+System.out.println ("\nSimulation of " + game
+   + " based on " + numberOfGames + " games");
+System.out.println ("Must win by 2:  " + winByTwo);
+System.out.println ();
+System.out.println ("    Probabilities         Percentage");
+System.out.println (" for winning volley        of Wins");
+System.out.println ("     A       B            A        B");
+        System.out.println ();
+ 
+// Simulate games for 40% to 60% probabilities for A
+for (int prob40To60 = 40; prob40To60 <= 60; prob40To60++)
+   {
+     double probWinVolley = prob40To60 / 100.0;
+ 
+     // Simulate games for a given probability
+     int AWins = 0;  // at first neither A nor B has won any games
+     int BWins = 0;
+     for (int i = 0; i < numberOfGames; i++)
+ { // tally winner of game
+   if (playUntilWin ("A", "B", probWinVolley, 0, 0).equals("A"))
+AWins++;
+   else
+BWins++;
+ }
+     System.out.println ("   "
+ + formatPercent(probWinVolley)   + "    " 
+ + formatPercent(1-probWinVolley) + "         "
+ + formatPercent(((double) AWins) / numberOfGames)
+ + "     "
+ + formatPercent(((double) BWins) / numberOfGames));
+   }
+System.out.println ("\nEnd of Simulation\n");
+    }
+
+/**
+* @parm args is a command-line argument specifies the type of game
+*       "racquetball" indicates server need not win by 2 points
+*       "volleyball" indicates server must win by 2 points
+*       no parameter or other parameter defaults to "racquetball"
+*/
+    public static void main (String [] args)
+    {
+Game1Recur rac1 = new Game1Recur ("racquetball", 1000);
+rac1.simulateGames() ;
+
+Game1Recur rac2 = new Game1Recur ("volleyball", 500);
+rac2.simulateGames();
+    }
+}​
+
+Laboratory Exercise: Local and Global Variables; 
+Constructor Parameters and Static Variables
+
+1a. Alternative Solution One uses an object-oriented approach allowing for instances for multiple game simulations. Also, it allows for a lot of games to be made. Alternative Solution Two is all static and uses recursion. This version does not allow for many instances to be tested at one time and also uses recursion which has been discovered to be somewhat inefficient. 
+
+b. The programmer has to manually put in the variables for Alternative Solution Two instead of having the program create simulation of all different kinds.
+For Alternative Solution One the code can be integrated with iteration to produce many simulations easily.
+
+c. After looking through both programs, we would have to agree that alternative solution one is preferred because of how dynamic it is. This method takes advantage of java's object oriented language by using classes. The classes allow for an ease of testing that seemed redundant and accident-prone when using c or scheme. Alternative Solution One allows the programmer to creatively add ways to generate simulations, without having to change the code every time they would like to generate a new solution.  
+
+References:
+Spencer Liberto:for help with advantages and disadvantages of iteration and recursion on
+problem 1
+
+Nick Knoebber: for help with understanding the advantages of using classes for simulations (problem 1 on lab 2) and for help on problem four. 
+
+http://stackoverflow.com/questions/9634224/what-is-the-meaning-of-static-in-a-method-header
+for help understanding static methods in answering 2a.

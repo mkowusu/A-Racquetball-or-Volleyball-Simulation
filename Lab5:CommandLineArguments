@@ -1,0 +1,415 @@
+Anita DeWitt
+Michael Owusu
+
+9/21/2014
+
+Laboratory Exercise: Command-Line Arguments
+
+Steps for this Lab
+
+1.
+java Game4Recur racquetball:
+The first obvious change this code gave us in the first few lines of
+output. It shows that the game is indeed a game of racquetball. WinByTwo is
+set to false
+
+java Game4Recur volleyball:
+When run with this command line argument, again the first parts of the
+output we see that the game is now set as a game of volleyball. Also,
+WinByTwo is now set to true as is in accordance with out rules for the two
+games.
+
+2.
+The code at the beginning of main is the code responsible for evaluating
+the command line arguments. It starts by initializing the variable game to
+be an empty string. It then checks if there is anything entered in the
+command line argument by seeing if the argument is more than or equal to 1
+character. If so it sets the value from the command line to be that of
+game.
+
+3.
+a.
+An issue we encountered was with how to enter an integer into an array of
+strings. A search online showed that we could pass in the values of our
+integers into the string and use a function (integer.parseInt(args[i]) to convert them
+into an integer.
+ 
+b.
+The next issue we ran into was how to be able to enter in
+the command arguments out of order. We searched through a variety of
+methods that might have been more efficient/eloquent, but in the end, we
+decided that the easiest way was to use two if statements. If the first
+argument matched either volleyball or raquetball we then set the arg[0] as
+game and the numberOfGames as arg[1]. If the second argument was equal to
+volleyball or racquetball then we did the opposite. We don't believe this
+is the best way to implement this function or a complete way, however, it answers the
+question in its entirety and adheres to the specifications.
+
+This version of Game4Recur is now as follows:
+
+package volleyballRacquetball;
+
+/* 
+ * Racquetball/Volleyball Simulation:  
+ *    Solution Alternative 2:  Store game, simulation data in static variables
+ *    Serve-by-Serve Recursive Approach
+ *    Type of game given in a command-line parameter
+ * Copyright(c) 2011 by Henry M. Walker
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * This code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * @author Henry M. Walker
+ */
+
+// The Math library is needed for its random() function
+import java.lang.Math;
+
+/**
+ * This class simulates a volleyball or racquetball game
+ * between players/teams A and B, based on the probability
+ * that A will win a volley.  1000 games are simulated,
+ * with the probability of A winning a volley being 
+ * 0.40, 0.41, ..., 0.59, 0.60 .
+ */
+public class Game4Recur {
+    // Edit these lines to indicate the game to be simulated
+    // and the number of games to simulate for each server probability
+    public static String game;       // "racquetball" or "volleyball"
+    public static int numberOfGames;
+    public static boolean winByTwo;  // winner must be ahead by at least 2 points
+
+    // use the following field to enable tracing of results of each game
+    public static boolean printGame = false;
+
+    /**
+     * Format a probability (a number between 0.0 and 1.0)
+     * as a 2-character integer percentage, followed by a
+     * "%" character.
+     */
+    public static String formatPercent (double value)
+    {
+	String str = "" + Math.round(value * 100.0);
+	while (str.length() < 3)
+	    str = " " + str;
+	return str + "%";
+    }
+	
+    /**
+     * Play one game of racquetball or volleyball to conclusion
+     * @parms  server and receiver indicate the team "A" or "B"
+     *         probWinVolley specifies the likelihood the server wins a volley
+     *         serverScore, recScore contain current score of
+     *             server and receiver
+     * @returns winner of game: either "A" or "B"
+     */
+    public static String playUntilWin (String server, String receiver,
+				       double probWinVolley, 
+				       int serverScore, int recScore) 
+     {  // serve
+	if (Math.random() < probWinVolley)
+	    { // score point
+		serverScore++;
+	      // if win, return winner
+		if ((serverScore >= 15)
+		    && ((! winByTwo)
+			 || (serverScore >= recScore + 2)))
+		    { if (printGame)
+			    System.out.println (server + " - Scores:  " 
+						+ serverScore 
+						+ " / " + recScore);
+		      return server;
+		    }
+	      // if not win, serve again
+		{return playUntilWin (server, receiver, probWinVolley, 
+				      serverScore, recScore);
+		}
+
+	    }
+	else
+	    { // other side wins; other player serves 
+		return playUntilWin (receiver, server, 1.0-probWinVolley,
+				     recScore, serverScore);
+	    }
+    }
+
+    /**
+     * Run simulation of 1000 games for probability of "A" winning
+     *   a volley covering the range 0.40, 0.41, ..., 0.59, 0.60.
+     * For each probability of "A" winning,
+     *   simulate games with Player/Team A always serving first
+     *   print one line with the percentage of volleys won by A and B 
+     *     and percentage of games won by A and B
+     */
+    
+    
+    public static void main (String [] args)
+    {   game = "";    // initially, game is unspecified
+    numberOfGames = 0; // initially numberOfGames is 0
+
+    int racquetballTest = args[0].compareTo("racquetball");
+    int volleyballTest = args[0].compareTo("volleyball");
+
+    int racquetballTest1 = args[1].compareTo("racquetball");
+    int volleyballTest1 = args[1].compareTo("volleyball");
+
+    // check any command-line argument
+    if (racquetballTest == 0 || volleyballTest == 0){
+    	game = args[0];
+    	numberOfGames = Integer.parseInt(args[1]);
+    }
+    else if (racquetballTest1 == 0 || volleyballTest1 == 0){
+    	game = args[1];
+    	numberOfGames = Integer.parseInt(args[0]);
+    }
+
+
+    // determine if server must win by 2 (e.g., in volleyball)
+    winByTwo = game.equals("volleyball");
+
+    // print headings
+    System.out.println ("\nSimulation of " + game
+    		+ " based on " + numberOfGames + " games");
+    System.out.println ("Must win by 2:  " + winByTwo);
+    System.out.println ();
+    System.out.println ("    Probabilities         Percentage");
+    System.out.println (" for winning volley        of Wins");
+    System.out.println ("     A       B            A        B");
+    System.out.println ();
+
+	// Simulate games for 40% to 60% probabilities for A
+	for (int prob40To60 = 40; prob40To60 <= 60; prob40To60++)
+	    {
+	      double probWinVolley = prob40To60 / 100.0;
+ 
+	      // Simulate games for a given probability
+	      int AWins = 0;  // at first neither A nor B has won any games
+	      int BWins = 0;
+	      for (int i = 0; i < numberOfGames; i++)
+		  { // tally winner of game
+		    if (playUntilWin ("A", "B", probWinVolley, 0, 0).equals("A"))
+			AWins++;
+		    else
+			BWins++;
+		  }
+	      System.out.println ("   "
+			  + formatPercent(probWinVolley)   + "    " 
+			  + formatPercent(1-probWinVolley) + "         "
+			  + formatPercent(((double) AWins) / numberOfGames)
+			  + "     "
+			  + formatPercent(((double) BWins) / numberOfGames));
+	    }
+	System.out.println ("\nEnd of Simulation\n");
+    }
+}
+
+
+
+4.
+One problem we had in our last implementation of this code is that when
+fewer than 2 (or more) arguments are supplied, an error is returned. The other error
+checking method we are going to implement is an error message for when neither of
+the aruments given are a correct game.
+
+The code with these error checks implemented is as follows
+
+package volleyballRacquetball;
+
+/* 
+ * Racquetball/Volleyball Simulation:  
+ *    Solution Alternative 2:  Store game, simulation data in static variables
+ *    Serve-by-Serve Recursive Approach
+ *    Type of game given in a command-line parameter
+ * Copyright(c) 2011 by Henry M. Walker
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * This code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * @author Henry M. Walker
+ * edited by Michael Owusu and Anita Dewitt 9/21/14
+ */
+
+// The Math library is needed for its random() function
+import java.lang.Math;
+
+/**
+ * This class simulates a volleyball or racquetball game
+ * between players/teams A and B, based on the probability
+ * that A will win a volley.  1000 games are simulated,
+ * with the probability of A winning a volley being 
+ * 0.40, 0.41, ..., 0.59, 0.60 .
+ */
+public class Game4Recur {
+	// Edit these lines to indicate the game to be simulated
+	// and the number of games to simulate for each server probability
+	public static String game;       // "racquetball" or "volleyball"
+	public static int numberOfGames;
+	public static boolean winByTwo;  // winner must be ahead by at least 2 points
+
+	// use the following field to enable tracing of results of each game
+	public static boolean printGame = false;
+
+	/**
+	 * Format a probability (a number between 0.0 and 1.0)
+	 * as a 2-character integer percentage, followed by a
+	 * "%" character.
+	 */
+	public static String formatPercent (double value)
+	{
+		String str = "" + Math.round(value * 100.0);
+		while (str.length() < 3)
+			str = " " + str;
+		return str + "%";
+	}
+
+	/**
+	 * Play one game of racquetball or volleyball to conclusion
+	 * @parms  server and receiver indicate the team "A" or "B"
+	 *         probWinVolley specifies the likelihood the server wins a volley
+	 *         serverScore, recScore contain current score of
+	 *             server and receiver
+	 * @returns winner of game: either "A" or "B"
+	 */
+	public static String playUntilWin (String server, String receiver,
+			double probWinVolley, 
+			int serverScore, int recScore) 
+	{  // serve
+		if (Math.random() < probWinVolley)
+		{ // score point
+			serverScore++;
+			// if win, return winner
+			if ((serverScore >= 15)
+					&& ((! winByTwo)
+							|| (serverScore >= recScore + 2)))
+			{ if (printGame)
+				System.out.println (server + " - Scores:  " 
+						+ serverScore 
+						+ " / " + recScore);
+			return server;
+			}
+			// if not win, serve again
+			{return playUntilWin (server, receiver, probWinVolley, 
+					serverScore, recScore);
+			}
+
+		}
+		else
+		{ // other side wins; other player serves 
+			return playUntilWin (receiver, server, 1.0-probWinVolley,
+					recScore, serverScore);
+		}
+	}
+
+	/**
+	 * Run simulation of 1000 games for probability of "A" winning
+	 *   a volley covering the range 0.40, 0.41, ..., 0.59, 0.60.
+	 * For each probability of "A" winning,
+	 *   simulate games with Player/Team A always serving first
+	 *   print one line with the percentage of volleys won by A and B 
+	 *     and percentage of games won by A and B
+	 */
+
+
+	public static void main (String [] args)
+	{   game = "";    // initially, game is unspecified
+	numberOfGames = 0; // initially numberOfGames is 0
+
+	// check any command-line argument
+	if (args.length == 2){
+		
+		// Test variables for detecting game type
+		int racquetballTest = args[0].compareTo("racquetball");
+		int volleyballTest = args[0].compareTo("volleyball");
+		int racquetballTest1 = args[1].compareTo("racquetball");
+		int volleyballTest1 = args[1].compareTo("volleyball");
+		
+		if ((racquetballTest == 0 || volleyballTest == 0) ||
+				(racquetballTest1 == 0 || volleyballTest1 == 0)){
+
+			if (racquetballTest == 0 || volleyballTest == 0){
+				game = args[0];
+				numberOfGames = Integer.parseInt(args[1]);
+			}
+			else if (racquetballTest1 == 0 || volleyballTest1 == 0){
+				game = args[1];
+				numberOfGames = Integer.parseInt(args[0]);
+			}
+		}
+		else{ 
+			System.out.println("Please correctly specify game type!");
+			System.exit(0);
+		}
+	}
+	else{
+		System.out.println("Incorrect number of arguments!");
+		System.exit(0);
+	}
+
+	// determine if server must win by 2 (e.g., in volleyball)
+	winByTwo = game.equals("volleyball");
+
+	// print headings
+	System.out.println ("\nSimulation of " + game
+			+ " based on " + numberOfGames + " games");
+	System.out.println ("Must win by 2:  " + winByTwo);
+	System.out.println ();
+	System.out.println ("    Probabilities         Percentage");
+	System.out.println (" for winning volley        of Wins");
+	System.out.println ("     A       B            A        B");
+	System.out.println ();
+
+	// Simulate games for 40% to 60% probabilities for A
+	for (int prob40To60 = 40; prob40To60 <= 60; prob40To60++)
+	{
+		double probWinVolley = prob40To60 / 100.0;
+
+		// Simulate games for a given probability
+		int AWins = 0;  // at first neither A nor B has won any games
+		int BWins = 0;
+		for (int i = 0; i < numberOfGames; i++)
+		{ // tally winner of game
+			if (playUntilWin ("A", "B", probWinVolley, 0, 0).equals("A"))
+				AWins++;
+			else
+				BWins++;
+		}
+		System.out.println ("   "
+				+ formatPercent(probWinVolley)   + "    " 
+				+ formatPercent(1-probWinVolley) + "         "
+				+ formatPercent(((double) AWins) / numberOfGames)
+				+ "     "
+				+ formatPercent(((double) BWins) / numberOfGames));
+	}
+	System.out.println ("\nEnd of Simulation\n");
+	}
+}
+
+
+
+Citations:
+1.
+For help running program with command line arguments:
+http://theopentutorials.com/tutorials/java/cmd-line-args/how-to-pass-command-line-arguments-in-eclipse-ide/
+
+2.
+For  help passing in an integer as a string into the command argument and
+converting to an integer.
+http://www.mathcs.emory.edu/~cheung/Courses/170/Syllabus/09/command-args.html
+
+3.
+For help terminating program when error is found
+http://stackoverflow.com/questions/7600812/which-method-is-used-to-terminate-the-execution-of-java-program-in-between
+
+
